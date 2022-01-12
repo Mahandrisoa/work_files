@@ -6,38 +6,58 @@
 # >= 2 numbers
 # >= punctuations
 # at least on number
-
 import random
 import string
 
-password = []
+categories = {
+    'upper': string.ascii_uppercase,
+    'lower': string.ascii_lowercase,
+    'digit': string.digits,
+    'punct': string.punctuation
+}
 
-def random_upper(): return random.choice(string.ascii_uppercase)
-def random_lower(): return random.choice(string.ascii_lowercase)
-def random_digit(): return random.choice(string.digits)
-def random_punctu(): return random.choice(string.punctuation)
+def random_char(category): return random.choice(categories[category])
 
-n_upper = n_lower = n_digit = n_punct = 0
-ok = False
-while not ok:
-    choice = random.randint(1, 4)
-    print(choice)
-    if choice == 1:
-        n_upper += 1
-        password.append(random_upper())
-    elif choice == 2:
-        n_lower += 1
-        password.append(random_lower())
-    elif choice == 3:
-        n_digit += 1
-        password.append(random_digit())
-    elif choice == 4:
-        n_punct += 1
-        password.append(random_punctu())
+# Global variables
+MIN_UPPER = 2
+MIN_LOWER = 2
+MIN_DIGIT = 2
+MIN_PUNCT = 2
 
-    ok = n_upper >= 2 and n_lower >= 2 and n_digit >= 2 and n_punct >= 2
-    if ok:
-        break
+class PasswordGenerator(object):
+    '''
+    Simple password generator
+    '''
+    choices = ('upper', 'lower', 'digit', 'punct')
 
-secure_password = ''.join(password)
-print('Password : {} length={}'.format(secure_password, len(secure_password)))
+    def __init__(self):
+        self.password = []
+        self.counters = {
+            'upper': 0,
+            'lower': 0,
+            'digit': 0,
+            'punct': 0
+        }
+    
+    def isValid(self):
+        return self.counters['upper'] >= MIN_UPPER \
+                and self.counters['lower'] >= MIN_LOWER \
+                and self.counters['digit'] >= MIN_DIGIT \
+                and self.counters['punct'] >= MIN_PUNCT
+
+    def generate(self):
+        """
+        Generate password based 
+        """
+        while not self.isValid():
+            choice = random.choice(self.choices)
+            self.counters[choice] += 1
+            self.password.append(random_char('upper'))
+           
+        secure_password = ''.join(self.password)        
+        return secure_password
+
+if __name__ == '__main__':
+    g = PasswordGenerator()
+    p = g.generate()
+    print('Password : {} length={}'.format(p, len(p)))
